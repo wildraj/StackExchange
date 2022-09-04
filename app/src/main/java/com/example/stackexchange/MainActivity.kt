@@ -9,8 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.stackexchange.dataclasses.Question
 import androidx.recyclerview.widget.DividerItemDecoration
-
-
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley;
+import org.json.JSONArray
+import org.json.JSONException
 
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     val questions: MutableList<Question> = arrayListOf()
     lateinit var questionList: RecyclerView
     lateinit var layoutManager: LinearLayoutManager
+    var page = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,20 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         // Obtains the RecyclerView to display the questions
         questionList = findViewById(R.id.questionList)
-
-        questions.add(Question(2, "Question2", "Comment2"))
-        questions.add(Question(3, "Question3", "Comment3"))
-        questions.add(Question(4, "Question4", "Comment4"))
-        questions.add(Question(1, "Question1", "Comment1"))
-        questions.add(Question(2, "Question2", "Comment2"))
-        questions.add(Question(3, "Question3", "Comment3"))
-        questions.add(Question(4, "Question4", "Comment4"))
-        questions.add(Question(1, "Question1", "Comment1"))
-        questions.add(Question(2, "Question2", "Comment2"))
-        questions.add(Question(3, "Question3", "Comment3"))
-        questions.add(Question(4, "Question4", "Comment4"))
-        questionList.adapter = QuestionAdapter(questions)
-
         layoutManager = LinearLayoutManager(this)
         questionList.layoutManager = layoutManager
 
@@ -68,18 +61,45 @@ class MainActivity : AppCompatActivity() {
 
     fun getData(){
         // Add data
-        questions.add(Question(1, "Question1", "Comment1"))
+        val queue = Volley.newRequestQueue(this)
+        val url = "https://api.stackexchange.com/questions?page="+page+"&pagesize=10&fromdate=1661731200&site=stackoverflow"
+        val request = JsonObjectRequest(
+            Request.Method.GET,
+            url,
+            null,
+            { response ->
+                val items = response.getJSONArray("items")
+                for (i in 0..items.length() - 1) {
+                    try {
+                        val obj = items.getJSONObject(i)
+                        questions.add(
+                            Question(
+                                obj.getInt("question_id"),
+                                obj.getString("title"),
+                                "Comment"
+                            )
+                        )
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                    }
+                }
+                // Binds the obtained data to the RecyclerView
+                // Assigns Linear Layout as the layout manager for the RecyclerView
+                questionList.adapter = QuestionAdapter(questions)
+                val dividerItemDecoration = DividerItemDecoration(
+                    questionList.getContext(),
+                    layoutManager.getOrientation()
+                )
 
-
-        // Binds the obtained data to the RecyclerView
-        // Assigns Linear Layout as the layout manager for the RecyclerView
-        questionList.adapter = QuestionAdapter(questions)
-        val dividerItemDecoration = DividerItemDecoration(
-            questionList.getContext(),
-            layoutManager.getOrientation()
+                // Displays dividers
+                questionList.addItemDecoration(dividerItemDecoration)
+                page++
+            },
+            { error ->
+                println("===============")
+                println(error)
+            }
         )
-
-        // Displays dividers
-        questionList.addItemDecoration(dividerItemDecoration)
+        queue.add(request)
     }
 }
