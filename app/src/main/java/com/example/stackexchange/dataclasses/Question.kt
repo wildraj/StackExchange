@@ -1,3 +1,3 @@
 package com.example.stackexchange.dataclasses
 
-data class Question(val questionId: Int, val title: String, val comment: String)
+data class Question(val questionId: Int, val title: String)

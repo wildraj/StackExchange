@@ -11,10 +11,10 @@ class QuestionAdapter(private val dataSet: MutableList<Question>): RecyclerView.
     // Retrives the elements of the view and assigns them
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val title: TextView
-        val comment: TextView
+//        val comment: TextView
         init {
             title = view.findViewById(R.id.questionTitle)
-            comment = view.findViewById(R.id.questionComment)
+//            comment = view.findViewById(R.id.questionComment)
         }
     }
 
@@ -27,7 +27,7 @@ class QuestionAdapter(private val dataSet: MutableList<Question>): RecyclerView.
     // Binds data to each of the rows
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.title.text = dataSet[position].title
-        viewHolder.comment.text = dataSet[position].comment
+//        viewHolder.comment.text = dataSet[position].comment
     }
 
     // Sets the size of the data

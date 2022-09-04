@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     fun getData(){
         // Add data
         val queue = Volley.newRequestQueue(this)
-        val url = "https://api.stackexchange.com/questions?page="+page+"&pagesize=10&fromdate=1661731200&site=stackoverflow"
+        val url = "https://api.stackexchange.com/search/advanced?page="+page+"&pagesize=10&sort=activity&order=desc&accepted=True&answers=2&site=stackoverflow"
         val request = JsonObjectRequest(
             Request.Method.GET,
             url,
@@ -75,8 +75,7 @@ class MainActivity : AppCompatActivity() {
                         questions.add(
                             Question(
                                 obj.getInt("question_id"),
-                                obj.getString("title"),
-                                "Comment"
+                                obj.getString("title")
                             )
                         )
                     } catch (e: JSONException) {
