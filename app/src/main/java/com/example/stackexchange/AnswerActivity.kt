@@ -13,6 +13,7 @@ import com.android.volley.toolbox.Volley
 import com.example.stackexchange.dataclasses.Answer
 import com.example.stackexchange.dataclasses.Question
 import org.json.JSONException
+import org.jsoup.Jsoup
 
 class AnswerActivity : AppCompatActivity() {
     private var answers: MutableList<Answer> = arrayListOf()
@@ -41,7 +42,7 @@ class AnswerActivity : AppCompatActivity() {
     fun getData(){
         // Add data
         val queue = Volley.newRequestQueue(this)
-        val url = "https://api.stackexchange.com/questions/"+question.questionId+"/answers?order=desc&site=stackoverflow"
+        val url = "https://api.stackexchange.com/questions/"+question.questionId+"/answers?order=desc&site=stackoverflow&filter=!ao-)iqhlPTEH2L "
         val request = JsonObjectRequest(
             Request.Method.GET,
             url,
@@ -52,11 +53,15 @@ class AnswerActivity : AppCompatActivity() {
                 for (i in 0..items.length() - 1) {
                     try {
                         val obj = items.getJSONObject(i)
+                        var comment = "No Comment"
+                        if(obj.has("body")){
+                            comment = Jsoup.parse(obj.getString("body")).text()
+                        }
                         answers.add(
                             Answer(
                                 obj.getInt("answer_id"),
                                 obj.getBoolean("is_accepted"),
-                                "This is a test"
+                                comment
                             )
                         )
                         if(obj.getBoolean("is_accepted")){
