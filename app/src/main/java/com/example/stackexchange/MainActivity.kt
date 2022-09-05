@@ -1,5 +1,6 @@
 package com.example.stackexchange
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -10,12 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.stackexchange.dataclasses.Question
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley;
-import org.json.JSONArray
 import org.json.JSONException
 
 
@@ -38,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         questionList = findViewById(R.id.questionList)
         layoutManager = LinearLayoutManager(this)
         questionList.layoutManager = layoutManager
+
 
         // Retrieves the first 10 items
         getData()
@@ -84,7 +82,14 @@ class MainActivity : AppCompatActivity() {
                 }
                 // Binds the obtained data to the RecyclerView
                 // Assigns Linear Layout as the layout manager for the RecyclerView
-                questionList.adapter = QuestionAdapter(questions)
+                val adapter = QuestionAdapter(questions)
+                adapter.onItemClick = { question ->
+                    // Get to new page here
+                    val intent = Intent(this@MainActivity, AnswerActivity::class.java)
+                    intent.putExtra("question", question)
+                    startActivity(intent)
+                }
+                questionList.adapter = adapter
                 val dividerItemDecoration = DividerItemDecoration(
                     questionList.getContext(),
                     layoutManager.getOrientation()
